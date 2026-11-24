@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BID STROME — Online Auction Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- REGISTER -->
+<div id="registerScreen">
+  <div class="login-card">
+    <div class="logo">◉ BID STROME</div>
+    <h1>Create<br><span>Account</span></h1>
+    <p>New user? Pehle Register karo • Free hai</p>
+    <div class="form">
+      <input id="rName" placeholder="Full Name">
+      <input id="rEmail" placeholder="Email">
+      <input id="rPass" type="password" placeholder="Password min 6">
+      <select id="rRole"><option value="bidder">Bidder — Buy Items</option><option value="admin">Admin — Manage Catalogue</option></select>
+      <button class="btn-primary" onclick="doRegister()">Register →</button>
+      <p style="text-align:center;font-size:14px;">Already have account? <a onclick="showLogin()" style="color:#facc15;font-weight:800;cursor:pointer">Login Here</a></p>
+      <div class="row"><button onclick="quickLogin('bidder')">Demo Bidder</button><button onclick="quickLogin('admin')">Demo Admin</button></div>
+    </div>
+  </div>
+  <div class="login-side">
+    <h2>Join<br>Bid Strome</h2>
+    <div class="live-card"><span class="live-dot"></span> 48 LIVE AUCTIONS • JOIN NOW</div>
+    <div class="mini-stats"><div><b>48</b><span>Products</span></div><div><b>8</b><span>Categories</span></div><div><b>Live</b><span>Bidding</span></div></div>
+    <p style="margin-top:20px;color:#cbd5e1;font-size:14px;">1. Register karo<br>2. Login karo<br>3. Bid karo aur Jeeto 🏆</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="display:none">
+  <div class="login-card">
+    <div class="logo">◉ BID STROME</div>
+    <h1>Welcome<br><span>Back</span></h1>
+    <p>Login to start bidding • Live Voice Enabled</p>
+    <div class="form">
+      <input id="lEmail" placeholder="Email - jo register me diya tha">
+      <input id="lPass" type="password" placeholder="Password">
+      <button class="btn-primary" onclick="doLogin()">Login →</button>
+      <p style="text-align:center;font-size:14px;">New user? <a onclick="showRegister()" style="color:#facc15;font-weight:800;cursor:pointer">Register Here</a></p>
+      <div class="row"><button onclick="quickLogin('bidder')">Demo Bidder</button><button onclick="quickLogin('admin')">Demo Admin</button></div>
+    </div>
+    <p id="loginMsg" style="color:#22c55e;font-weight:700;margin-top:10px;display:none;">✅ Register successful! Ab login karo.</p>
+  </div>
+  <div class="login-side">
+    <h2>Bid Fast<br>Win Big</h2>
+    <div class="live-card"><span class="live-dot"></span> 48 LIVE AUCTIONS • VOICE ENABLED</div>
+    <div class="mini-stats"><div><b>48</b><span>Products</span></div><div><b>16</b><span>Categories</span></div><div><b>Live</b><span>Bidding</span></div></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <header class="topnav">
+    <div class="logo">◉ BID STROME <span class="tag">48 PRODUCTS</span></div>
+    <nav><a id="navCat" onclick="switchTab('catalogue')">Catalogue</a><a id="navBid" onclick="switchTab('mybids')">My Bids <span id="bidCount" class="badge">0</span></a><a id="navWon" onclick="switchTab('won')">Won <span id="wonCount" class="badge pink">0</span></a><a id="adminNav" style="display:none" onclick="switchTab('admin')">Admin</a><div id="userArea"></div></nav>
+  </header>
+
+  <section class="hero-auction">
+    <div><h1>BID <span>STROME</span> LIVE</h1><p>Search by typing or by voice, filter, sort, view details, bid, cart & checkout.</p></div>
+    <div class="search-bar">
+      <input id="q" placeholder="Search - e.g. Rolex, Camera, Art, PS5..." oninput="render()">
+      <select id="catSel" onchange="render()"></select>
+      <select id="sortSel" onchange="render()"><option value="ending">Ending Soon</option><option value="priceLow">Price Low→High</option><option value="priceHigh">Price High→Low</option><option value="bids">Most Bids</option></select>
+      <button onclick="clearSearch()" class="clear-btn">Clear</button>
+      <button id="voiceBtn" onclick="toggleVoice()" class="voice-btn">🎙 Voice</button>
+    </div>
+  </section>
+
+  <div class="cat-pills" id="catGrid"></div>
+
+  <div id="catalogueTab"><div class="grid" id="grid"></div></div>
+  <div id="mybidsTab" style="display:none;max-width:1200px;margin:0 auto;padding:0 22px 80px"><h2>My Bids</h2><div class="grid" id="bidsGrid"></div></div>
+  <div id="wonTab" style="display:none;max-width:1200px;margin:0 auto;padding:0 22px 80px"><h2>Won — Checkout</h2><div class="grid" id="wonGrid"></div><div class="checkout-box"><h3>Checkout Summary</h3><div id="checkoutSummary">No items won yet.</div><button class="btn-primary" onclick="checkout()">Proceed to Checkout →</button></div></div>
+  <div id="adminTab" style="display:none;max-width:1200px;margin:0 auto;padding:0 22px 80px"><div class="admin-head"><h2>Admin — Catalogue</h2><button class="btn-primary small" onclick="openAdd()">+ Add Product</button></div><input id="adminQ" placeholder="Search admin..." oninput="renderAdmin()"><div class="table-wrap"><table class="table" id="adminTable"></table></div></div>
+
+  <div id="backdrop" class="modal-backdrop" onclick="if(event.target==this)closeModal()"><div class="modal" id="modal"></div></div>
+
+  <div id="voiceWidget">
+    <span id="voiceStatus">🔊 Voice On</span>
+    <button onclick="toggleVoice()" class="voice-listen">Listen</button>
+    <button onclick="speak('Welcome to Bid Strome Live. 48 auctions live. Say search Rolex, or bid, or show my bids')" class="voice-help">Help</button>
+  </div>
+  <div id="voiceTranscript"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
